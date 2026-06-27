@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DATESEG MX — Portal de Apps</title>
+<meta name="description" content="Portal de aplicaciones DATESEG MX — Electrónica Automotriz Millán">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0d1b2a;--blue:#1a3a5c;--orange:#f47c20;
+  --green:#27ae60;--gray:#f4f6f9;--white:#fff;
+  --text:#1a1f2e;--sub:#5a6475;
+}
+body{font-family:Arial,sans-serif;background:var(--navy);min-height:100vh;color:var(--white)}
+
+/* HEADER */
+.header{background:rgba(0,0,0,0.3);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.08)}
+.logo{font-size:1.4rem;font-weight:700;letter-spacing:1px}
+.logo span{color:var(--orange)}
+.logo small{display:block;font-size:0.7rem;opacity:0.6;font-weight:400;letter-spacing:2px;text-transform:uppercase}
+.wa-btn{background:#25d366;color:#fff;text-decoration:none;padding:8px 16px;border-radius:8px;font-size:0.82rem;font-weight:700;display:flex;align-items:center;gap:6px}
+
+/* HERO */
+.hero{text-align:center;padding:48px 20px 36px}
+.hero-tag{display:inline-block;background:var(--orange);color:#fff;font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:16px}
+.hero h1{font-size:clamp(1.8rem,5vw,3rem);font-weight:700;margin-bottom:8px}
+.hero h1 span{color:var(--orange)}
+.hero p{font-size:0.95rem;opacity:0.7;max-width:500px;margin:0 auto}
+
+/* GRID DE APPS */
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;max-width:1200px;margin:0 auto;padding:0 20px 60px}
+
+.app-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:28px 24px;cursor:pointer;transition:all 0.25s;text-decoration:none;color:var(--white);display:block;position:relative;overflow:hidden}
+.app-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.25s}
+.app-card:hover{transform:translateY(-6px);border-color:var(--orange);box-shadow:0 16px 48px rgba(0,0,0,0.4)}
+.app-card:hover::before{opacity:1}
+
+.app-card.refa{border-top:4px solid #2a5298}
+.app-card.refa:hover{border-color:#2a5298;box-shadow:0 16px 48px rgba(42,82,152,0.3)}
+.app-card.super{border-top:4px solid var(--green)}
+.app-card.super:hover{border-color:var(--green);box-shadow:0 16px 48px rgba(39,174,96,0.3)}
+.app-card.cotizador{border-top:4px solid var(--orange)}
+.app-card.cotizador:hover{border-color:var(--orange);box-shadow:0 16px 48px rgba(244,124,32,0.3)}
+.app-card.servicios{border-top:4px solid #8e44ad}
+.app-card.servicios:hover{border-color:#8e44ad;box-shadow:0 16px 48px rgba(142,68,173,0.3)}
+
+.app-icon{font-size:3rem;margin-bottom:14px;display:block}
+.app-badge{font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:10px;display:inline-block;margin-bottom:10px}
+.badge-blue{background:rgba(42,82,152,0.3);color:#7aabff}
+.badge-green{background:rgba(39,174,96,0.3);color:#5ddb8b}
+.badge-orange{background:rgba(244,124,32,0.3);color:#ffb074}
+.badge-purple{background:rgba(142,68,173,0.3);color:#d4a4ff}
+
+.app-name{font-size:1.3rem;font-weight:700;margin-bottom:6px}
+.app-desc{font-size:0.83rem;opacity:0.65;line-height:1.5;margin-bottom:16px}
+.app-features{display:flex;flex-direction:column;gap:4px;margin-bottom:18px}
+.app-features span{font-size:0.78rem;opacity:0.75}
+.btn-abrir{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:10px;font-weight:700;font-size:0.88rem;border:none;cursor:pointer;width:100%;transition:opacity 0.2s}
+.btn-abrir:hover{opacity:0.85}
+.btn-blue{background:#2a5298;color:#fff}
+.btn-green{background:var(--green);color:#fff}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-purple{background:#8e44ad;color:#fff}
+
+/* VIEWER */
+.viewer{display:none;position:fixed;inset:0;z-index:1000;flex-direction:column;background:var(--navy)}
+.viewer.show{display:flex}
+.viewer-bar{background:rgba(0,0,0,0.5);padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.1);flex-shrink:0}
+.viewer-title{font-size:0.9rem;font-weight:700;flex:1}
+.btn-cerrar{background:rgba(255,255,255,0.1);border:none;color:#fff;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:700;display:flex;align-items:center;gap:5px}
+.btn-cerrar:hover{background:rgba(255,0,0,0.3)}
+.viewer-frame{flex:1;border:none;width:100%;background:#fff}
+
+/* FOOTER */
+footer{text-align:center;padding:20px;border-top:1px solid rgba(255,255,255,0.08);font-size:0.75rem;opacity:0.5}
+footer strong{color:var(--orange);opacity:1}
+
+@media(max-width:500px){.hero{padding:32px 16px 24px}.apps-grid{grid-template-columns:1fr;padding:0 16px 40px}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    DATESEG<span> MX</span>
+    <small>Sistema de Tecnologías Automotrices</small>
+  </div>
+  <a class="wa-btn" href="https://wa.me/522219567392">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.118 1.532 5.845L0 24l6.318-1.509A11.933 11.933 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.372l-.36-.214-3.727.976.999-3.64-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+    WhatsApp
+  </a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">⚡ Alpuyeca, Morelos</div>
+  <h1>Portal de <span>Apps</span> Millán</h1>
+  <p>Selecciona la aplicación que necesitas — todas en un solo lugar</p>
+</div>
+
+<!-- APPS -->
+<div class="apps-grid">
+
+  <!-- REFACCIONARIA -->
+  <a class="app-card refa" onclick="abrirApp('Refa/index.html','🔧 Refaccionaria de Partes Eléctricas Millán')">
+    <span class="app-icon">🔧</span>
+    <span class="app-badge badge-blue">Punto de Venta</span>
+    <div class="app-name">Refaccionaria Millán</div>
+    <div class="app-desc">Sistema POS para refaccionaria de partes eléctricas automotrices</div>
+    <div class="app-features">
+      <span>📦 Inventario de partes eléctricas</span>
+      <span>📷 Escáner código de barras</span>
+      <span>🧾 Cobro con ticket Bluetooth</span>
+      <span>📊 Historial y reportes de ventas</span>
+    </div>
+    <button class="btn-abrir btn-blue" onclick="event.preventDefault();abrirApp('Refa/index.html','🔧 Refaccionaria Millán')">▶ Abrir App</button>
+  </a>
+
+  <!-- MINI SÚPER -->
+  <a class="app-card super" onclick="abrirApp('Super/index.html','🛒 Mini Súper La Güera')">
+    <span class="app-icon">🛒</span>
+    <span class="app-badge badge-green">Punto de Venta</span>
+    <div class="app-name">Mini Súper La Güera</div>
+    <div class="app-desc">Sistema POS para tienda de abarrotes — bebidas, botanas, lácteos y más</div>
+    <div class="app-features">
+      <span>🥤 Catálogo de abarrotes completo</span>
+      <span>📷 Escáner de productos</span>
+      <span>💳 Cobro QR / CoDi / DiMo</span>
+      <span>📈 Dashboard de ventas del día</span>
+    </div>
+    <button class="btn-abrir btn-green" onclick="event.preventDefault();abrirApp('Super/index.html','🛒 Mini Súper La Güera')">▶ Abrir App</button>
+  </a>
+
+  <!-- COTIZADOR -->
+  <a class="app-card cotizador" onclick="abrirApp('cotizador/index.html','🔩 Cotizador de Servicios Automotrices')">
+    <span class="app-icon">🔩</span>
+    <span class="app-badge badge-orange">Taller Mecánico</span>
+    <div class="app-name">Cotizador de Servicios</div>
+    <div class="app-desc">Genera órdenes de servicio con precios — reparaciones, diagnóstico y más</div>
+    <div class="app-features">
+      <span>📋 +60 servicios con precio base</span>
+      <span>👤 Datos del cliente y vehículo</span>
+      <span>🖨️ Orden imprimible Bluetooth</span>
+      <span>💹 Descuentos y totales automáticos</span>
+    </div>
+    <button class="btn-abrir btn-orange" onclick="event.preventDefault();abrirApp('cotizador/index.html','🔩 Cotizador de Servicios')">▶ Abrir App</button>
+  </a>
+
+  <!-- SERVICIOS / PÁGINA WEB -->
+  <a class="app-card servicios" onclick="abrirApp('servicios/index.html','🌐 Millán — Electrónica Automotriz')">
+    <span class="app-icon">🌐</span>
+    <span class="app-badge badge-purple">Página Web</span>
+    <div class="app-name">Página de Servicios</div>
+    <div class="app-desc">Presentación profesional de servicios para compartir en Facebook y WhatsApp</div>
+    <div class="app-features">
+      <span>⚡ Electrónica automotriz</span>
+      <span>📡 PULSAR DX · OilMaster</span>
+      <span>🏠 Servicio a domicilio</span>
+      <span>💬 Botón WhatsApp directo</span>
+    </div>
+    <button class="btn-abrir btn-purple" onclick="event.preventDefault();abrirApp('servicios/index.html','🌐 Página de Servicios Millán')">▶ Abrir App</button>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <strong>DATESEG MX</strong> — Sistema de Tecnologías Automotrices · Alpuyeca, Morelos · ☎ 777-683-8196
+</footer>
+
+<!-- VIEWER (iframe fullscreen) -->
+<div class="viewer" id="viewer">
+  <div class="viewer-bar">
+    <span class="viewer-title" id="viewerTitle">App</span>
+    <button class="btn-cerrar" onclick="cerrarApp()">✕ Cerrar</button>
+  </div>
+  <iframe class="viewer-frame" id="viewerFrame" src="" allowfullscreen></iframe>
+</div>
+
+<script>
+function abrirApp(url, titulo){
+  document.getElementById('viewerTitle').textContent = titulo;
+  document.getElementById('viewerFrame').src = url;
+  document.getElementById('viewer').classList.add('show');
+  // Bloquear scroll del body
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarApp(){
+  document.getElementById('viewer').classList.remove('show');
+  document.getElementById('viewerFrame').src = '';
+  document.body.style.overflow = '';
+}
+
+// Cerrar con tecla Escape
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape') cerrarApp();
+});
+</script>
+
+</body>
+</html>
