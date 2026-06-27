@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador — Electrónica Automotriz Millán</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#1e3c72;--blue:#2a5298;--orange:#f47c20;
+  --green:#27ae60;--red:#e74c3c;--gray:#f4f6f9;
+  --white:#fff;--text:#1a1f2e;--sub:#5a6475;
+}
+body{font-family:Arial,sans-serif;background:var(--gray);color:var(--text);min-height:100vh;padding-bottom:40px}
+
+/* HEADER */
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:16px;text-align:center}
+header h1{font-size:1.3rem;font-weight:700}
+header p{font-size:0.8rem;opacity:0.8;margin-top:4px}
+
+.container{max-width:900px;margin:0 auto;padding:16px}
+
+/* DATOS DEL CLIENTE */
+.card{background:var(--white);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07)}
+.card-title{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--orange);padding-bottom:8px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.form-group label{display:block;font-size:0.75rem;font-weight:700;color:var(--sub);margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;border:1px solid #dde4f0;border-radius:8px;font-size:0.88rem;outline:none;transition:border-color 0.2s}
+.form-group input:focus,.form-group select:focus{border-color:var(--blue)}
+.form-group textarea{resize:vertical;min-height:60px}
+
+/* CATEGORÍAS */
+.cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.cat-tab{padding:6px 14px;border-radius:20px;border:2px solid var(--border,#dde4f0);background:#fff;font-size:0.78rem;font-weight:700;cursor:pointer;color:var(--text);transition:all 0.15s;white-space:nowrap}
+.cat-tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* SERVICIOS */
+.servicios-lista{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto}
+.servicio-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #eef0f5;border-radius:10px;cursor:pointer;transition:all 0.15s;background:#fafbff}
+.servicio-item:hover{border-color:var(--blue);background:#f0f4ff}
+.servicio-item.selected{border-color:var(--orange);background:#fff8f0}
+.svc-check{width:22px;height:22px;border-radius:6px;border:2px solid #ccd3e0;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.85rem;transition:all 0.15s}
+.servicio-item.selected .svc-check{background:var(--orange);border-color:var(--orange);color:#fff}
+.svc-info{flex:1}
+.svc-nombre{font-size:0.88rem;font-weight:700;color:var(--text)}
+.svc-desc{font-size:0.72rem;color:var(--sub)}
+.svc-precio{font-size:1rem;font-weight:700;color:var(--green);white-space:nowrap}
+.svc-precio-input{width:90px;padding:5px 8px;border:1px solid var(--orange);border-radius:6px;font-size:0.88rem;font-weight:700;color:var(--orange);text-align:right}
+
+/* RESUMEN */
+.resumen-items{margin-bottom:12px}
+.res-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee;font-size:0.85rem}
+.res-nombre{flex:1;color:var(--text)}
+.res-precio{font-weight:700;color:var(--green);margin-left:10px}
+.btn-quitar{background:none;border:none;color:var(--red);cursor:pointer;font-size:0.9rem;padding:0 4px}
+.total-box{background:#f0f4ff;border-radius:10px;padding:14px;margin-bottom:14px}
+.total-row{display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:6px}
+.total-row.grande{font-size:1.3rem;font-weight:700;color:var(--navy);margin-top:8px;border-top:2px solid #dde4f0;padding-top:8px}
+
+/* DESCUENTO */
+.desc-row{display:flex;gap:6px;margin-bottom:10px;align-items:center}
+.desc-row label{font-size:0.78rem;color:var(--sub);font-weight:700;white-space:nowrap}
+.desc-row input{width:80px;padding:7px;border:1px solid #dde4f0;border-radius:6px;font-size:0.9rem;text-align:center}
+.desc-row select{padding:7px;border:1px solid #dde4f0;border-radius:6px;font-size:0.82rem}
+
+/* BOTONES */
+.btns-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn{padding:12px;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.9rem;transition:opacity 0.2s}
+.btn:hover{opacity:0.9}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-green{background:var(--green);color:#fff}
+.btn-full{grid-column:1/-1}
+
+/* MODAL TICKET */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:16px;padding:22px;max-width:400px;width:92%;max-height:90vh;overflow-y:auto}
+.modal h2{text-align:center;color:var(--navy);margin-bottom:14px}
+.ticket{font-family:'Courier New',monospace;font-size:0.78rem;background:#fafafa;border:1px solid #eee;border-radius:8px;padding:14px;white-space:pre;overflow-x:auto;margin-bottom:14px;line-height:1.6}
+.modal-btns{display:flex;gap:8px;flex-wrap:wrap}
+.modal-btn{flex:1;padding:11px;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.84rem}
+.modal-btn.bt{background:var(--orange);color:#fff}
+.modal-btn.print{background:var(--blue);color:#fff}
+.modal-btn.cerrar{background:#eee;color:var(--text)}
+
+/* EMPTY STATE */
+.empty{text-align:center;color:var(--sub);padding:24px;font-size:0.88rem}
+
+/* BADGE */
+.badge{background:var(--orange);color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;margin-left:4px}
+
+@media(max-width:600px){.btns-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔧 Electrónica Automotriz Millán</h1>
+  <p>Cotizador de Servicios · Alpuyeca, Morelos</p>
+</header>
+
+<div class="container">
+
+  <!-- DATOS DEL CLIENTE -->
+  <div class="card">
+    <div class="card-title">👤 Datos del Cliente y Vehículo</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre del cliente</label><input id="cNombre" placeholder="Ej. Juan García"></div>
+      <div class="form-group"><label>Teléfono</label><input id="cTel" placeholder="777-000-0000" type="tel"></div>
+      <div class="form-group"><label>Marca del vehículo</label><input id="vMarca" placeholder="Nissan, VW, Chevy..."></div>
+      <div class="form-group"><label>Modelo / Año</label><input id="vModelo" placeholder="Tsuru 2015"></div>
+      <div class="form-group"><label>Placas</label><input id="vPlacas" placeholder="ABC-123-D"></div>
+      <div class="form-group"><label>Kilometraje</label><input id="vKm" placeholder="85,000 km" type="text"></div>
+      <div class="form-group" style="grid-column:1/-1"><label>Observaciones / falla reportada</label><textarea id="cObs" placeholder="Describe el problema o falla reportada por el cliente..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- SERVICIOS -->
+  <div class="card">
+    <div class="card-title">🔩 Selecciona los Servicios <span class="badge" id="selCount">0</span></div>
+
+    <div class="cat-tabs" id="catTabs"></div>
+    <div class="servicios-lista" id="serviciosLista"></div>
+  </div>
+
+  <!-- RESUMEN Y COBRO -->
+  <div class="card">
+    <div class="card-title">🧾 Resumen de la Orden</div>
+
+    <div class="resumen-items" id="resumenItems">
+      <div class="empty">Selecciona servicios para ver el resumen</div>
+    </div>
+
+    <div class="desc-row">
+      <label>Descuento:</label>
+      <input type="number" id="descVal" placeholder="0" min="0" oninput="calcTotal()">
+      <select id="descTipo" onchange="calcTotal()">
+        <option value="pesos">$ Pesos</option>
+        <option value="porciento">%</option>
+      </select>
+    </div>
+
+    <div class="total-box">
+      <div class="total-row"><span>Subtotal mano de obra</span><span id="tSubtotal">$0.00</span></div>
+      <div class="total-row" id="tDescRow" style="color:var(--red);display:none"><span>Descuento</span><span id="tDesc">-$0.00</span></div>
+      <div class="total-row grande"><span>TOTAL</span><span id="tTotal">$0.00</span></div>
+    </div>
+
+    <div class="btns-grid">
+      <button class="btn btn-primary" onclick="generarOrden()">📋 Ver Orden / Ticket</button>
+      <button class="btn btn-orange" onclick="imprimirBluetooth()">🖨️ Imprimir Bluetooth</button>
+      <button class="btn btn-green btn-full" onclick="limpiarTodo()">🗑️ Nueva orden</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL TICKET -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>📋 Orden de Servicio</h2>
+    <div class="ticket" id="ticketContent"></div>
+    <div class="modal-btns">
+      <button class="modal-btn print" onclick="imprimirNormal()">🖥️ Imprimir</button>
+      <button class="modal-btn bt" onclick="imprimirBluetooth()">📡 Bluetooth</button>
+      <button class="modal-btn cerrar" onclick="document.getElementById('modalOverlay').classList.remove('show')">✓ Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CATÁLOGO DE SERVICIOS
+// Precios base orientativos para Morelos/Cuernavaca
+// El técnico puede editarlos en el campo de precio
+// ══════════════════════════════════════════
+const SERVICIOS = [
+
+  // DIAGNÓSTICO
+  {cat:"Diagnóstico",nombre:"Escaneo OBD2 / Lectura de fallas",desc:"Lectura de códigos DTC, reporte de sensores",precio:150},
+  {cat:"Diagnóstico",nombre:"Diagnóstico eléctrico general",desc:"Revisión de circuitos, fusibles, relevadores",precio:200},
+  {cat:"Diagnóstico",nombre:"Diagnóstico de no arranque",desc:"Revisión sistema arranque, batería, marcha",precio:250},
+  {cat:"Diagnóstico",nombre:"Diagnóstico de fuga eléctrica",desc:"Medición de corriente en reposo",precio:300},
+  {cat:"Diagnóstico",nombre:"Diagnóstico de sistema de carga",desc:"Prueba alternador, regulador y batería",precio:200},
+
+  // COMPUTADORA / ECU
+  {cat:"Computadora ECU",nombre:"Reparación de computadora (ECU)",desc:"Diagnóstico y reparación de módulo ECU",precio:800},
+  {cat:"Computadora ECU",nombre:"Programación de computadora",desc:"Programación/codificación de ECU nueva o usada",precio:600},
+  {cat:"Computadora ECU",nombre:"Instalación de computadora",desc:"Montaje y conexión de ECU",precio:300},
+  {cat:"Computadora ECU",nombre:"Reset / borrado de códigos",desc:"Limpieza de códigos de falla y adaptaciones",precio:150},
+
+  // SENSORES
+  {cat:"Sensores",nombre:"Sustitución sensor O2 (sonda lambda)",desc:"Cambio de sensor de oxígeno",precio:350},
+  {cat:"Sensores",nombre:"Sustitución sensor TPS",desc:"Cambio de sensor posición mariposa",precio:300},
+  {cat:"Sensores",nombre:"Sustitución sensor CKP (cigüeñal)",desc:"Cambio de sensor de posición cigüeñal",precio:350},
+  {cat:"Sensores",nombre:"Sustitución sensor MAP",desc:"Cambio de sensor de presión absoluta",precio:300},
+  {cat:"Sensores",nombre:"Sustitución sensor MAF",desc:"Cambio de sensor de flujo de aire",precio:400},
+  {cat:"Sensores",nombre:"Sustitución sensor temperatura",desc:"Cambio de sensor de temperatura refrigerante",precio:250},
+  {cat:"Sensores",nombre:"Sustitución sensor de velocidad",desc:"Cambio de sensor ABS o velocímetro",precio:300},
+  {cat:"Sensores",nombre:"Limpieza de sensores",desc:"Limpieza con producto especializado",precio:150},
+
+  // INYECTORES
+  {cat:"Inyectores",nombre:"Limpieza de inyectores (juego)",desc:"Limpieza ultrasónica o por flujo",precio:600},
+  {cat:"Inyectores",nombre:"Sustitución de inyector (c/u)",desc:"Cambio de inyector individual",precio:400},
+  {cat:"Inyectores",nombre:"Regulador de presión de combustible",desc:"Cambio de regulador",precio:300},
+
+  // ENCENDIDO
+  {cat:"Encendido",nombre:"Cambio de bujías (juego 4 cil.)",desc:"Sustitución bujías estándar o iridio",precio:200},
+  {cat:"Encendido",nombre:"Cambio de cables de bujía",desc:"Sustitución juego de cables",precio:200},
+  {cat:"Encendido",nombre:"Cambio de bobina de encendido",desc:"Sustitución de bobina",precio:350},
+  {cat:"Encendido",nombre:"Cambio de módulo de encendido",desc:"Sustitución de módulo ICM",precio:400},
+  {cat:"Encendido",nombre:"Afinación completa",desc:"Bujías + cables + filtros + revisión general",precio:800},
+
+  // CARGA / ALTERNADOR
+  {cat:"Carga y Arranque",nombre:"Cambio de alternador",desc:"Sustitución de alternador reconstruido",precio:600},
+  {cat:"Carga y Arranque",nombre:"Reparación de alternador",desc:"Cambio de carbones, rectificador o diodos",precio:400},
+  {cat:"Carga y Arranque",nombre:"Cambio de marcha / arranque",desc:"Sustitución de motor de arranque",precio:500},
+  {cat:"Carga y Arranque",nombre:"Reparación de marcha",desc:"Cambio de bendix, solenoide o carbones",precio:350},
+  {cat:"Carga y Arranque",nombre:"Cambio de batería",desc:"Instalación de batería (sin incluir batería)",precio:100},
+  {cat:"Carga y Arranque",nombre:"Revisión de sistema de carga",desc:"Prueba completa de alternador y batería",precio:150},
+
+  // SISTEMA ELÉCTRICO
+  {cat:"Sistema Eléctrico",nombre:"Reparación de arnés / cableado",desc:"Reparación de cableado dañado",precio:400},
+  {cat:"Sistema Eléctrico",nombre:"Instalación de alarma",desc:"Instalación de sistema de alarma básica",precio:500},
+  {cat:"Sistema Eléctrico",nombre:"Instalación de GPS rastreador",desc:"Instalación y configuración de rastreador",precio:400},
+  {cat:"Sistema Eléctrico",nombre:"Cambio de relay principal",desc:"Sustitución de relay principal ECU",precio:200},
+  {cat:"Sistema Eléctrico",nombre:"Reparación de tablero / indicadores",desc:"Revisión y reparación de instrumentación",precio:500},
+  {cat:"Sistema Eléctrico",nombre:"Cambio de fusibles / portafusibles",desc:"Sustitución y revisión de fusibles",precio:150},
+  {cat:"Sistema Eléctrico",nombre:"Instalación de audio / bocinas",desc:"Instalación de radio, bocinas o amplificador",precio:400},
+
+  // ILUMINACIÓN
+  {cat:"Iluminación",nombre:"Cambio de focos delanteros",desc:"Sustitución focos halógenos o LED",precio:150},
+  {cat:"Iluminación",nombre:"Instalación kit xenón / LED",desc:"Instalación de kit de conversión",precio:400},
+  {cat:"Iluminación",nombre:"Reparación de faros dañados",desc:"Revisión y reparación de faros",precio:300},
+  {cat:"Iluminación",nombre:"Cambio de focos traseros/direccionales",desc:"Sustitución focos traseros",precio:100},
+
+  // FRENOS
+  {cat:"Frenos",nombre:"Ajuste de frenos traseros",desc:"Regulación de frenos de tambor",precio:200},
+  {cat:"Frenos",nombre:"Cambio de pastillas delanteras",desc:"Sustitución pastillas (sin pastillas)",precio:250},
+  {cat:"Frenos",nombre:"Cambio de balatas traseras",desc:"Sustitución balatas (sin balatas)",precio:250},
+  {cat:"Frenos",nombre:"Sangrado de frenos",desc:"Purga y sangrado del sistema hidráulico",precio:200},
+  {cat:"Frenos",nombre:"Cambio de líquido de frenos",desc:"Sustitución líquido DOT4",precio:150},
+
+  // CLUTCH / TRANSMISIÓN
+  {cat:"Clutch y Transmisión",nombre:"Ajuste de clutch",desc:"Ajuste de pedal y cable de clutch",precio:150},
+  {cat:"Clutch y Transmisión",nombre:"Cambio de cable de clutch",desc:"Sustitución de cable",precio:250},
+  {cat:"Clutch y Transmisión",nombre:"Cambio de kit de clutch",desc:"Disco + prensa + collarín (sin refacciones)",precio:800},
+  {cat:"Clutch y Transmisión",nombre:"Cambio de aceite de transmisión",desc:"Sustitución aceite transmisión manual",precio:200},
+
+  // MOTOR
+  {cat:"Motor",nombre:"Cambio de aceite de motor",desc:"Sustitución aceite + filtro (sin aceite)",precio:150},
+  {cat:"Motor",nombre:"Cambio de banda de distribución",desc:"Sustitución banda + tensores (sin refacciones)",precio:800},
+  {cat:"Motor",nombre:"Cambio de bomba de agua",desc:"Sustitución bomba de agua (sin refacción)",precio:400},
+  {cat:"Motor",nombre:"Limpieza de cuerpo de aceleración",desc:"Desmontaje y limpieza de TB",precio:300},
+  {cat:"Motor",nombre:"Cambio de termostato",desc:"Sustitución de termostato",precio:200},
+
+  // SERVICIO A DOMICILIO
+  {cat:"Servicio Domicilio",nombre:"Visita a domicilio (zona local)",desc:"Alpuyeca y colonias cercanas",precio:100},
+  {cat:"Servicio Domicilio",nombre:"Visita a domicilio (zona lejana)",desc:"Fuera del municipio",precio:200},
+  {cat:"Servicio Domicilio",nombre:"Servicio de emergencia en carretera",desc:"Atención de urgencia en carretera",precio:400},
+  {cat:"Servicio Domicilio",nombre:"Diagnóstico a domicilio",desc:"Escaneo + revisión en sitio",precio:300},
+
+  // OTROS
+  {cat:"Otros",nombre:"Mano de obra por hora",desc:"Trabajo general sin categoría específica",precio:150},
+  {cat:"Otros",nombre:"Revisión general del vehículo",desc:"Inspección multi-punto del vehículo",precio:200},
+  {cat:"Otros",nombre:"Traslado de vehículo",desc:"Maniobras y traslado interno",precio:150},
+];
+
+// ══════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════
+let seleccionados = new Map(); // codigo -> {servicio, precio}
+let catActiva = "Diagnóstico";
+const BT_SERVICE = '000018f0-0000-1000-8000-00805f9b34fb';
+const BT_CHAR    = '00002af1-0000-1000-8000-00805f9b34fb';
+let btDevice = null, btCharacteristic = null;
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+const cats = [...new Set(SERVICIOS.map(s=>s.cat))];
+
+function init(){
+  // Tabs de categorías
+  document.getElementById('catTabs').innerHTML = cats.map(c=>`
+    <div class="cat-tab ${c===catActiva?'active':''}" onclick="selCat('${c}')">${c}</div>
+  `).join('');
+  renderServicios();
+}
+
+function selCat(cat){
+  catActiva = cat;
+  document.querySelectorAll('.cat-tab').forEach(t=>{
+    t.classList.toggle('active', t.textContent===cat);
+  });
+  renderServicios();
+}
+
+function renderServicios(){
+  const lista = SERVICIOS.filter(s=>s.cat===catActiva);
+  document.getElementById('serviciosLista').innerHTML = lista.map((s,i)=>{
+    const key = s.cat+'|'+s.nombre;
+    const sel = seleccionados.has(key);
+    const precio = sel ? seleccionados.get(key).precio : s.precio;
+    return `
+    <div class="servicio-item ${sel?'selected':''}" onclick="toggleServicio('${key.replace(/'/g,"\\'")}')">
+      <div class="svc-check">${sel?'✓':''}</div>
+      <div class="svc-info">
+        <div class="svc-nombre">${s.nombre}</div>
+        <div class="svc-desc">${s.desc}</div>
+      </div>
+      <input class="svc-precio-input" type="number"
+        value="${precio}"
+        onclick="event.stopPropagation()"
+        onchange="editarPrecio('${key.replace(/'/g,"\\'")}', this.value)"
+        title="Edita el precio">
+    </div>`;
+  }).join('');
+}
+
+function toggleServicio(key){
+  const s = SERVICIOS.find(x=>(x.cat+'|'+x.nombre)===key);
+  if(!s) return;
+  if(seleccionados.has(key)){
+    seleccionados.delete(key);
+  } else {
+    seleccionados.set(key, {servicio:s, precio:s.precio});
+  }
+  renderServicios();
+  renderResumen();
+}
+
+function editarPrecio(key, val){
+  const precio = parseFloat(val)||0;
+  if(seleccionados.has(key)){
+    seleccionados.get(key).precio = precio;
+  } else {
+    const s = SERVICIOS.find(x=>(x.cat+'|'+x.nombre)===key);
+    if(s) seleccionados.set(key, {servicio:s, precio});
+  }
+  renderResumen();
+}
+
+// ══════════════════════════════════════════
+// RESUMEN Y TOTAL
+// ══════════════════════════════════════════
+function renderResumen(){
+  const div = document.getElementById('resumenItems');
+  const badge = document.getElementById('selCount');
+  badge.textContent = seleccionados.size;
+
+  if(seleccionados.size===0){
+    div.innerHTML='<div class="empty">Selecciona servicios para ver el resumen</div>';
+    calcTotal();
+    return;
+  }
+
+  div.innerHTML = [...seleccionados.entries()].map(([key,val])=>`
+    <div class="res-item">
+      <span class="res-nombre">${val.servicio.nombre}</span>
+      <span class="res-precio">$${val.precio.toFixed(2)}</span>
+      <button class="btn-quitar" onclick="quitarServicio('${key.replace(/'/g,"\\'")}')">✕</button>
+    </div>
+  `).join('');
+  calcTotal();
+}
+
+function quitarServicio(key){
+  seleccionados.delete(key);
+  renderServicios();
+  renderResumen();
+}
+
+function calcTotal(){
+  const sub = [...seleccionados.values()].reduce((s,v)=>s+v.precio,0);
+  const dv  = parseFloat(document.getElementById('descVal').value)||0;
+  const dt  = document.getElementById('descTipo').value;
+  let da = dv>0 ? (dt==='porciento'?sub*(dv/100):dv) : 0;
+  da = Math.min(da,sub);
+  const total = sub-da;
+  document.getElementById('tSubtotal').textContent = '$'+sub.toFixed(2);
+  const dr = document.getElementById('tDescRow');
+  if(da>0){dr.style.display='flex';document.getElementById('tDesc').textContent='-$'+da.toFixed(2);}
+  else dr.style.display='none';
+  document.getElementById('tTotal').textContent = '$'+total.toFixed(2);
+  return{sub,da,total};
+}
+
+// ══════════════════════════════════════════
+// GENERAR TICKET / ORDEN DE SERVICIO
+// ══════════════════════════════════════════
+function generarTextoOrden(){
+  const{sub,da,total}=calcTotal();
+  const nombre  = document.getElementById('cNombre').value||'Cliente';
+  const tel     = document.getElementById('cTel').value||'—';
+  const marca   = document.getElementById('vMarca').value||'—';
+  const modelo  = document.getElementById('vModelo').value||'—';
+  const placas  = document.getElementById('vPlacas').value||'—';
+  const km      = document.getElementById('vKm').value||'—';
+  const obs     = document.getElementById('cObs').value||'—';
+  const ahora   = new Date();
+  const fecha   = ahora.toLocaleDateString('es-MX');
+  const hora    = ahora.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  const folio   = 'OS-'+String(Date.now()).slice(-6);
+
+  let t='';
+  t+='================================\n';
+  t+='  ELECTRONICA AUTOMOTRIZ MILLAN\n';
+  t+='  Tel: 777-683-8196\n';
+  t+='  Tel: 221-956-7392\n';
+  t+='  Alpuyeca, Xochitepec, Mor.\n';
+  t+='================================\n';
+  t+='  ORDEN DE SERVICIO\n';
+  t+='================================\n';
+  t+=`Folio:  ${folio}\n`;
+  t+=`Fecha:  ${fecha}  ${hora}\n`;
+  t+='--------------------------------\n';
+  t+='CLIENTE:\n';
+  t+=`Nombre: ${nombre}\n`;
+  t+=`Tel:    ${tel}\n`;
+  t+='--------------------------------\n';
+  t+='VEHICULO:\n';
+  t+=`Marca:  ${marca}\n`;
+  t+=`Modelo: ${modelo}\n`;
+  t+=`Placas: ${placas}\n`;
+  t+=`Km:     ${km}\n`;
+  t+='--------------------------------\n';
+  t+='FALLA REPORTADA:\n';
+  // Partir observaciones en líneas de 32 chars
+  const obsLineas = obs.match(/.{1,30}/g)||[obs];
+  obsLineas.forEach(l=>{ t+=l+'\n'; });
+  t+='================================\n';
+  t+='SERVICIOS REALIZADOS:\n';
+  t+='--------------------------------\n';
+  [...seleccionados.values()].forEach(v=>{
+    const nom = v.servicio.nombre.length>24
+      ? v.servicio.nombre.substring(0,24)+'.'
+      : v.servicio.nombre;
+    t+=`${nom}\n`;
+    t+=`  Mano de obra: $${v.precio.toFixed(2)}\n`;
+  });
+  t+='================================\n';
+  t+=`Subtotal:    $${sub.toFixed(2)}\n`;
+  if(da>0) t+=`Descuento:  -$${da.toFixed(2)}\n`;
+  t+=`TOTAL:       $${total.toFixed(2)}\n`;
+  t+='================================\n';
+  t+='  * Precios incluyen mano de\n';
+  t+='    obra, no refacciones.\n';
+  t+='  * Garantia en mano de obra\n';
+  t+='    segun tipo de servicio.\n';
+  t+='================================\n';
+  t+=' Gracias por su preferencia!\n';
+  t+='================================\n';
+  return t;
+}
+
+function generarOrden(){
+  if(seleccionados.size===0){
+    alert('Selecciona al menos un servicio antes de generar la orden.');
+    return;
+  }
+  document.getElementById('ticketContent').textContent = generarTextoOrden();
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function imprimirNormal(){
+  const w=window.open('','_blank','width=420,height=650');
+  w.document.write('<pre style="font-family:monospace;font-size:12px;padding:14px;line-height:1.6">'+
+    generarTextoOrden()+'</pre>');
+  w.document.close(); w.print();
+}
+
+async function imprimirBluetooth(){
+  if(seleccionados.size===0){ alert('Selecciona servicios primero.'); return; }
+  try{
+    if(!btDevice||!btDevice.gatt.connected){
+      btDevice = await navigator.bluetooth.requestDevice({
+        filters:[{services:[BT_SERVICE]}],
+        optionalServices:[BT_SERVICE]
+      });
+      const server = await btDevice.gatt.connect();
+      const service = await server.getPrimaryService(BT_SERVICE);
+      btCharacteristic = await service.getCharacteristic(BT_CHAR);
+    }
+    const texto = generarTextoOrden();
+    const enc = new TextEncoder();
+    const ESC=0x1B, GS=0x1D;
+    const init=new Uint8Array([ESC,0x40]);
+    const left=new Uint8Array([ESC,0x61,0x00]);
+    const feed=new Uint8Array([ESC,0x64,0x05]);
+    const cut=new Uint8Array([GS,0x56,0x41,0x10]);
+    const body=enc.encode(texto);
+    const full=new Uint8Array(init.length+left.length+body.length+feed.length+cut.length);
+    let off=0;
+    [init,left,body,feed,cut].forEach(a=>{full.set(a,off);off+=a.length;});
+    for(let i=0;i<full.length;i+=512){
+      await btCharacteristic.writeValue(full.slice(i,i+512));
+      await new Promise(r=>setTimeout(r,80));
+    }
+    alert('✅ Orden enviada a impresora Bluetooth');
+  }catch(e){ alert('Error Bluetooth: '+e.message); }
+}
+
+function limpiarTodo(){
+  if(!confirm('¿Empezar una nueva orden? Se limpiará todo.')) return;
+  seleccionados.clear();
+  ['cNombre','cTel','vMarca','vModelo','vPlacas','vKm','cObs','descVal'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value='';
+  });
+  renderServicios();
+  renderResumen();
+}
+
+init();
+</script>
+</body>
+</html>

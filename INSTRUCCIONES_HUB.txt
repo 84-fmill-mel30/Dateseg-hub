@@ -1,0 +1,47 @@
+# DATESEG MX — Hub de Apps
+## Instrucciones para subir a GitHub
+
+### ESTRUCTURA DEL REPO
+```
+dateseg-hub/
+├── index.html          ← Portal principal (hub_index.html)
+├── refa/
+│   └── index.html      ← Refaccionaria (index_refa_smart.html)
+├── super/
+│   └── index.html      ← Mini Súper (index_minisuper_smart.html)
+├── cotizador/
+│   └── index.html      ← Cotizador (cotizador_millan.html)
+└── servicios/
+    └── index.html      ← Página servicios (index_servicios_fb.html)
+    └── preview.jpg     ← Imagen preview Facebook
+```
+
+### PASOS EN GITHUB
+
+1. Entra a github.com con tu cuenta 84-fmill-mel30
+2. Toca "+" → "New repository"
+3. Nombre: dateseg-hub
+4. Public ✅
+5. Toca "Create repository"
+
+### SUBIR ARCHIVOS
+
+Desde tu celular o compu:
+1. Entra al repo dateseg-hub
+2. Toca "Add file" → "Upload files"
+3. Sube: hub_index.html → renómbralo a index.html
+
+Luego crea las carpetas:
+- Toca "Add file" → "Create new file"
+- Escribe: refa/index.html → pega el contenido de index_refa_smart.html
+- Repite para: super/index.html, cotizador/index.html, servicios/index.html
+
+### ACTIVAR GITHUB PAGES
+
+1. Settings → Pages
+2. Source: Deploy from branch → main
+3. Folder: / (root)
+4. Save
+
+### URL FINAL
+https://84-fmill-mel30.github.io/dateseg-hub/
